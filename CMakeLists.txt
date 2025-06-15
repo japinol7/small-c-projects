@@ -1,0 +1,58 @@
+cmake_minimum_required(VERSION 3.28)
+project(small_c_projects C)
+
+set(CMAKE_C_STANDARD 17)
+
+include_directories(projects/cyber_dojo/fizzbuzz/fizzbuzz_take_01)
+add_subdirectory(projects/cyber_dojo/fizzbuzz/fizzbuzz_take_01)
+target_link_libraries(fizzbuzz_run projects/cyber_dojo/fizzbuzz/fizzbuzz_take_01)
+
+include_directories(projects/cyber_dojo/fizzbuzz_plus/fizzbuzz_plus_take_01)
+add_subdirectory(projects/cyber_dojo/fizzbuzz_plus/fizzbuzz_plus_take_01)
+target_link_libraries(fizzbuzz_plus_run projects/cyber_dojo/fizzbuzz_plus/fizzbuzz_plus_take_01)
+
+include_directories(projects/cyber_dojo/balanced_parentheses/balanced_parentheses_take_01)
+add_subdirectory(projects/cyber_dojo/balanced_parentheses/balanced_parentheses_take_01)
+target_link_libraries(balanced_parentheses_run projects/cyber_dojo/balanced_parentheses/balanced_parentheses_take_01)
+
+include_directories(projects/cyber_dojo/filename_range/filename_range_take_01)
+add_subdirectory(projects/cyber_dojo/filename_range/filename_range_take_01)
+target_link_libraries(filename_range_run projects/cyber_dojo/filename_range/filename_range_take_01)
+
+include_directories(projects/cyber_dojo/game_of_life/game_of_life_take_01)
+add_subdirectory(projects/cyber_dojo/game_of_life/game_of_life_take_01)
+target_link_libraries(game_of_life_run projects/cyber_dojo/game_of_life/game_of_life_take_01)
+
+include_directories(projects/cyber_dojo/isbn/isbn_take_01)
+add_subdirectory(projects/cyber_dojo/isbn/isbn_take_01)
+target_link_libraries(isbn_run projects/cyber_dojo/isbn/isbn_take_01)
+
+include_directories(projects/cyber_dojo/leap_year/leap_year_take_01)
+add_subdirectory(projects/cyber_dojo/leap_year/leap_year_take_01)
+target_link_libraries(leap_year_run projects/cyber_dojo/leap_year/leap_year_take_01)
+
+include_directories(projects/cyber_dojo/print_diamond/print_diamond_take_01)
+add_subdirectory(projects/cyber_dojo/print_diamond/print_diamond_take_01)
+target_link_libraries(print_diamond_run projects/cyber_dojo/print_diamond/print_diamond_take_01)
+
+include_directories(projects/cyber_dojo/lcd_digits/lcd_digits_take_01)
+add_subdirectory(projects/cyber_dojo/lcd_digits/lcd_digits_take_01)
+target_link_libraries(lcd_digits_run projects/cyber_dojo/lcd_digits/lcd_digits_take_01)
+
+include_directories(projects/various/roman_numerals_full/roman_numerals_full_take_01)
+add_subdirectory(projects/various/roman_numerals_full/roman_numerals_full_take_01)
+target_link_libraries(roman_numerals_full_run projects/various/roman_numerals_full/roman_numerals_full_take_01)
+
+include_directories(projects/cyber_dojo/roman_numerals/roman_numerals_take_01)
+add_subdirectory(projects/cyber_dojo/roman_numerals/roman_numerals_take_01)
+target_link_libraries(roman_numerals_run projects/cyber_dojo/roman_numerals/roman_numerals_take_01)
+
+include_directories(projects/cyber_dojo/reverse_roman/reverse_roman_take_01)
+add_subdirectory(projects/cyber_dojo/reverse_roman/reverse_roman_take_01)
+target_link_libraries(reverse_roman_run projects/cyber_dojo/reverse_roman/reverse_roman_take_01)
+
+add_subdirectory(lib/Google_tests)
+
+add_subdirectory(tests/unit)
+
+add_executable(hello_world projects/various/hello_world/hello_world.c)
