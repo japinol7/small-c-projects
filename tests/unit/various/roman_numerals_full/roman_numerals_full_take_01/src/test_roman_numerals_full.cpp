@@ -53,9 +53,9 @@ INSTANTIATE_TEST_SUITE_P(ToRomanCases, ToRomanTest,
         std::make_tuple(1984, "MCMLXXXIV", false),
         std::make_tuple(2023, "MMXXIII", false),
         std::make_tuple(3999, "MMMCMXCIX", false),
-        std::make_tuple(0, "", true),
-        std::make_tuple(4000, "", true),
-        std::make_tuple(-1, "", true)
+        std::make_tuple(0, "", true), // Error case
+        std::make_tuple(4000, "", true), // Error case
+        std::make_tuple(-1, "", true) // Error case
     )
 );
 
@@ -102,10 +102,10 @@ INSTANTIATE_TEST_SUITE_P(FromRomanCases, FromRomanTest,
         std::make_tuple("MCMLXXXIV", 1984, false),
         std::make_tuple("MMXXIII", 2023, false),
         std::make_tuple("MMMCMXCIX", 3999, false),
-        std::make_tuple("", 0, true),
-        std::make_tuple("MMMM", 0, true),
-        std::make_tuple("ABC", 0, true),
-        std::make_tuple("MMMCMXCIY", 0, true)
+        std::make_tuple("", 0, true), // Error case
+        std::make_tuple("MMMM", 0, true), // Error case (4000)
+        std::make_tuple("ABC", 0, true), // Error case (invalid chars)
+        std::make_tuple("MMMCMXCIY", 0, true) // Error case (invalid char Y)
     )
 );
 

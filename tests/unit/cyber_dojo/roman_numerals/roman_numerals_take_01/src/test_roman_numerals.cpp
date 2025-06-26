@@ -61,8 +61,8 @@ INSTANTIATE_TEST_SUITE_P(
         RomanTestCase{1984, "MCMLXXXIV", false},
         RomanTestCase{2023, "MMXXIII", false},
         RomanTestCase{3999, "MMMCMXCIX", false},
-        RomanTestCase{0, "", true},
-        RomanTestCase{4000, "", true},
-        RomanTestCase{-1, "", true}
+        RomanTestCase{0, "", true}, // Error case
+        RomanTestCase{4000, "", true}, // Error case
+        RomanTestCase{-1, "", true} // Error case
     )
 );
