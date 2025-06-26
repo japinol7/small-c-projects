@@ -7,65 +7,62 @@ extern "C" {
 
 using namespace ::testing;
 
-class RomanNumeralsTest : public Test {
+struct RomanTestCase {
+    int num;
+    const char* expected;
+    bool has_error;
+};
+
+class RomanNumeralsTest : public TestWithParam<RomanTestCase> {
 protected:
-    // Buffer for Roman numeral strings
     char roman_buffer[20]{};
 
     void SetUp() override {
-        // Initialize buffer before each test
         memset(roman_buffer, 0, sizeof(roman_buffer));
     }
 };
 
-// Test ToRoman conversion
-TEST_F(RomanNumeralsTest, ToRoman) {
-    struct TestCase {
-        int num;
-        const char* expected;
-        bool has_error;
-    };
+TEST_P(RomanNumeralsTest, ToRoman) {
+    const auto& [num, expected, has_error] = GetParam();
+    const int result = to_roman(num, roman_buffer, sizeof(roman_buffer));
 
-    TestCase test_cases[] = {
-        {1, "I", false},
-        {2, "II", false},
-        {3, "III", false},
-        {4, "IV", false},
-        {5, "V", false},
-        {9, "IX", false},
-        {10, "X", false},
-        {40, "XL", false},
-        {50, "L", false},
-        {73, "LXXIII", false},
-        {90, "XC", false},
-        {93, "XCIII", false},
-        {100, "C", false},
-        {400, "CD", false},
-        {500, "D", false},
-        {900, "CM", false},
-        {1000, "M", false},
-        {1984, "MCMLXXXIV", false},
-        {2023, "MMXXIII", false},
-        {3999, "MMMCMXCIX", false},
-        {0, "", true}, // Error case
-        {4000, "", true}, // Error case
-        {-1, "", true} // Error case
-    };
-
-    for (const auto& [num, expected, has_error] : test_cases) {
-        int result = to_roman(num, roman_buffer, sizeof(roman_buffer));
-
-        if (has_error) {
-            EXPECT_EQ(-1, result) << "to_roman(" << num << ") should return error";
-        }
-        else {
-            EXPECT_EQ(0, result) << "to_roman(" << num << ") should succeed";
-            EXPECT_STREQ(expected, roman_buffer)
-                << "to_roman(" << num << ") = " << roman_buffer
-                << ", expected " << expected;
-        }
-
-        // Reset buffer for next test
-        memset(roman_buffer, 0, sizeof(roman_buffer));
+    if (has_error) {
+        EXPECT_EQ(-1, result) << "to_roman(" << num << ") should return error";
+    }
+    else {
+        EXPECT_EQ(0, result) << "to_roman(" << num << ") should succeed";
+        EXPECT_STREQ(expected, roman_buffer)
+            << "to_roman(" << num << ") = " << roman_buffer
+            << ", expected " << expected;
     }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    RomanNumeralsTests,
+    RomanNumeralsTest,
+    Values(
+        RomanTestCase{1, "I", false},
+        RomanTestCase{2, "II", false},
+        RomanTestCase{3, "III", false},
+        RomanTestCase{4, "IV", false},
+        RomanTestCase{5, "V", false},
+        RomanTestCase{9, "IX", false},
+        RomanTestCase{10, "X", false},
+        RomanTestCase{40, "XL", false},
+        RomanTestCase{50, "L", false},
+        RomanTestCase{73, "LXXIII", false},
+        RomanTestCase{90, "XC", false},
+        RomanTestCase{93, "XCIII", false},
+        RomanTestCase{100, "C", false},
+        RomanTestCase{400, "CD", false},
+        RomanTestCase{500, "D", false},
+        RomanTestCase{900, "CM", false},
+        RomanTestCase{1000, "M", false},
+        RomanTestCase{1984, "MCMLXXXIV", false},
+        RomanTestCase{2023, "MMXXIII", false},
+        RomanTestCase{3999, "MMMCMXCIX", false},
+        RomanTestCase{0, "", true},
+        RomanTestCase{4000, "", true},
+        RomanTestCase{-1, "", true}
+    )
+);

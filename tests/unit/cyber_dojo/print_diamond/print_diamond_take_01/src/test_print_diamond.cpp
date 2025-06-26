@@ -10,42 +10,48 @@ using namespace ::testing;
 class PrintDiamondTest : public Test {
 protected:
     void SetUp() override {
-        // No setup code needed
+        // No setup needed
     }
 };
 
 // Test cases for empty or invalid input
-TEST_F(PrintDiamondTest, EmptyOrInvalidInput) {
-    struct TestCase {
-        const char* letter;
-        const char* expected;
-    };
-
-    TestCase tests[] = {
-        {"", ""},
-        {" ", ""},
-        {"ñ", ""},
-        {"FG", ""}
-    };
-
-    for (const auto& test : tests) {
-        // Create diamond
-        Diamond* diamond = newDiamond(test.letter);
-        ASSERT_NE(diamond, nullptr);
-
-        // Convert to string
-        char* result = diamondToString(diamond);
-        ASSERT_NE(result, nullptr);
-
-        // Check the result
-        EXPECT_STREQ(result, test.expected)
-            << "For input: '" << test.letter << "'";
-
-        // Clean up
-        free(result);
-        freeDiamond(diamond);
+class PrintDiamondEmptyInvalidTest : public TestWithParam<std::tuple<
+    const char*, const char*>>
+{
+protected:
+    void SetUp() override {
+        // No setup needed
     }
+};
+
+TEST_P(PrintDiamondEmptyInvalidTest, EmptyOrInvalidInput) {
+    auto [input, expected] = GetParam();
+
+    // Create diamond
+    Diamond* diamond = newDiamond(input);
+    ASSERT_NE(diamond, nullptr);
+
+    // Convert to string
+    char* result = diamondToString(diamond);
+    ASSERT_NE(result, nullptr);
+
+    // Check the result
+    EXPECT_STREQ(result, expected)
+        << "For input: '" << input << "'";
+
+    // Clean up
+    free(result);
+    freeDiamond(diamond);
 }
+
+INSTANTIATE_TEST_SUITE_P(PrintDiamondEmptyInvalid, PrintDiamondEmptyInvalidTest,
+    Values(
+        std::make_tuple("", ""),
+        std::make_tuple(" ", ""),
+        std::make_tuple("ñ", ""),
+        std::make_tuple("FG", "")
+    )
+);
 
 // Test case for letter A
 TEST_F(PrintDiamondTest, LetterA) {

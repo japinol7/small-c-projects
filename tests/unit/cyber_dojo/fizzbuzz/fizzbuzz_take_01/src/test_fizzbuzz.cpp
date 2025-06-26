@@ -7,7 +7,7 @@ extern "C" {
 
 using namespace ::testing;
 
-class FizzbuzzTest : public Test {
+class FizzbuzzSingleTest : public TestWithParam<std::tuple<int, const char*>> {
 protected:
     char buffer[100]{};
 
@@ -16,62 +16,67 @@ protected:
     }
 };
 
-TEST_F(FizzbuzzTest, SingleNumbers) {
-    struct TestCase {
-        int input;
-        const char* expected;
-    };
-
-    TestCase tests[] = {
-        {1, "1"},
-        {2, "2"},
-        {3, "Fizz"},
-        {4, "4"},
-        {5, "Buzz"},
-        {6, "Fizz"},
-        {10, "Buzz"},
-        {13, "13"},
-        {15, "FizzBuzz"},
-        {52, "52"}
-    };
-
-    for (const auto& test : tests) {
-        fizzbuzz(test.input, buffer, sizeof(buffer));
-        EXPECT_STREQ(buffer, test.expected) << "Fizzbuzz(" << test.input << ") = "
-                                           << buffer << ", want " << test.expected;
-    }
+TEST_P(FizzbuzzSingleTest, SingleNumber) {
+    auto [input, expected] = GetParam();
+    fizzbuzz(input, buffer, sizeof(buffer));
+    EXPECT_STREQ(buffer, expected)
+            << "Fizzbuzz(" << input << ") = "
+            << buffer << ", want " << expected;
 }
 
-TEST_F(FizzbuzzTest, Range) {
-    struct TestCase {
-        int input;
-        const char* expected;
-    };
+INSTANTIATE_TEST_SUITE_P(FizzbuzzSingle, FizzbuzzSingleTest,
+    Values(
+        std::make_tuple(1, "1"),
+        std::make_tuple(2, "2"),
+        std::make_tuple(3, "Fizz"),
+        std::make_tuple(4, "4"),
+        std::make_tuple(5, "Buzz"),
+        std::make_tuple(6, "Fizz"),
+        std::make_tuple(10, "Buzz"),
+        std::make_tuple(13, "13"),
+        std::make_tuple(15, "FizzBuzz"),
+        std::make_tuple(52, "52")
+    )
+);
 
-    TestCase tests[] = {
-        {1, "1"},
-        {2, "1\n2"},
-        {15, "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz"}
-    };
+class FizzbuzzRangeTest : public TestWithParam<std::tuple<int, const char*>> {
+protected:
+    char buffer[100]{};
 
-    for (const auto& test : tests) {
-        char** result = (char**)malloc(test.input * sizeof(char*));
-        ASSERT_NE(result, nullptr);
-
-        fizzbuzz_range(test.input, result);
-        string_join(result, test.input, buffer, sizeof(buffer));
-
-        EXPECT_STREQ(buffer, test.expected) << "string_join(fizzbuzz_range(" << test.input << ")) = "
-                                            << buffer << ", want " << test.expected;
-
-        free_fizzbuzz_range(result, test.input);
-        free(result);
+    void SetUp() override {
+        memset(buffer, 0, sizeof(buffer));
     }
+};
+
+TEST_P(FizzbuzzRangeTest, Range) {
+    auto [input, expected] = GetParam();
+    
+    char** result = static_cast<char**>(malloc(input * sizeof(char*)));
+    ASSERT_NE(result, nullptr);
+
+    fizzbuzz_range(input, result);
+    string_join(result, input, buffer, sizeof(buffer));
+
+    EXPECT_STREQ(buffer, expected)
+            << "string_join(fizzbuzz_range(" << input << ")) = "
+            << buffer << ", want " << expected;
+
+    free_fizzbuzz_range(result, input);
+    free(result);
 }
 
-TEST_F(FizzbuzzTest, RangeUntilOneHundred) {
+INSTANTIATE_TEST_SUITE_P(FizzbuzzRange, FizzbuzzRangeTest,
+    Values(
+        std::make_tuple(1, "1"),
+        std::make_tuple(2, "1\n2"),
+        std::make_tuple(15,
+            "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz")
+    )
+);
+
+TEST(FizzbuzzRangeHundredTest, RangeUntilOneHundred) {
     const int n = 100;
-    char** result = (char**)malloc(n * sizeof(char*));
+    char** result = static_cast<char**>(malloc(n * sizeof(char*)));
     ASSERT_NE(result, nullptr);
 
     fizzbuzz_range(n, result);
