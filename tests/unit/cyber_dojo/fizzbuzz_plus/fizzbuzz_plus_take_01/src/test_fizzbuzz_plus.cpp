@@ -12,7 +12,8 @@ struct SingleNumberTestCase {
     static std::string GetTestName(
         const testing::TestParamInfo<SingleNumberTestCase>& info
     ) {
-        return std::to_string(info.param.input);
+        return "Input_" + std::to_string(info.param.input)
+               + "_Expected_" + info.param.expected;
     }
 };
 
@@ -52,6 +53,17 @@ INSTANTIATE_TEST_SUITE_P(
     SingleNumberTestCase::GetTestName
 );
 
+std::string processRangeExpectedString(const std::string& input, const int len) {
+    std::string result;
+    for (size_t i = 0; i < std::min(input.length(), static_cast<size_t>(len)); i++) {
+        result += (input[i] == '\n') ? '_' : input[i];
+    }
+    if (input.length() > len) {
+        result += "__etc";
+    }
+    return result;
+}
+
 struct RangeTestCase {
     int input;
     const char* expected;
@@ -59,7 +71,8 @@ struct RangeTestCase {
     static std::string GetTestName(
         const testing::TestParamInfo<RangeTestCase>& info
     ) {
-        return std::to_string(info.param.input);
+        return "Range_" + std::to_string(info.param.input)
+               + "_Expected_" + processRangeExpectedString(info.param.expected, 10);
     }
 };
 

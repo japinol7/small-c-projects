@@ -16,7 +16,7 @@ struct RomanConversionTestCase {
         if (info.param.expected == 0) {
             return "Input_Error_" + info.param.roman;
         }
-        return info.param.roman + "_Number_"
+        return info.param.roman + "_Expected_"
                + std::to_string(info.param.expected);
     }
 };

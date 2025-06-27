@@ -22,7 +22,7 @@ struct RomanTestCase {
         // Replace invalid characters with underscores
         std::string name = std::to_string(info.param.num);
         std::replace(name.begin(), name.end(), '-', '_');
-        return "Number_" + name + "_Roman_" + info.param.expected;
+        return "Number_" + name + "_Expected_" + info.param.expected;
     }
 };
 

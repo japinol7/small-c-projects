@@ -22,7 +22,7 @@ struct ToRomanTestCase {
         // Replace invalid characters with underscores
         std::string name = std::to_string(info.param.num);
         std::replace(name.begin(), name.end(), '-', '_');
-        return "Number_" + name + "_Roman_" + info.param.expected;
+        return "Number_" + name + "_Expected_" + info.param.expected;
     }
 };
 
@@ -38,7 +38,7 @@ struct FromRomanTestCase {
             return std::string("Input_Error_") + info.param.roman;
         }
         return std::string("Roman_") + info.param.roman
-               + std::string("_Number_")
+               + std::string("_Expected_")
                + std::to_string(info.param.expected);;
     }
 };
