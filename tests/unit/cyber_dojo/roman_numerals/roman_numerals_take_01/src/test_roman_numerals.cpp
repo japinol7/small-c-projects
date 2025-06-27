@@ -5,15 +5,28 @@ extern "C" {
 #include "../../../../projects/cyber_dojo/roman_numerals/roman_numerals_take_01/src/roman_numerals.h"
 }
 
-using namespace ::testing;
-
 struct RomanTestCase {
     int num;
     const char* expected;
     bool has_error;
+
+    static std::string GetTestName(
+        const testing::TestParamInfo<RomanTestCase>& info
+    ) {
+        if (info.param.expected == "") {
+            // Replace invalid characters with underscores
+            std::string name = std::to_string(info.param.num);
+            std::replace(name.begin(), name.end(), '-', '_');
+            return "Input_Error_" + name;
+        }
+        // Replace invalid characters with underscores
+        std::string name = std::to_string(info.param.num);
+        std::replace(name.begin(), name.end(), '-', '_');
+        return "Number_" + name + "_Roman_" + info.param.expected;
+    }
 };
 
-class RomanNumeralsTest : public TestWithParam<RomanTestCase> {
+class RomanNumeralsTest : public testing::TestWithParam<RomanTestCase> {
 protected:
     char roman_buffer[20]{};
 
@@ -40,7 +53,7 @@ TEST_P(RomanNumeralsTest, ToRoman) {
 INSTANTIATE_TEST_SUITE_P(
     RomanNumeralsTests,
     RomanNumeralsTest,
-    Values(
+    testing::Values(
         RomanTestCase{1, "I", false},
         RomanTestCase{2, "II", false},
         RomanTestCase{3, "III", false},
@@ -64,5 +77,11 @@ INSTANTIATE_TEST_SUITE_P(
         RomanTestCase{0, "", true}, // Error case
         RomanTestCase{4000, "", true}, // Error case
         RomanTestCase{-1, "", true} // Error case
-    )
+    ),
+    RomanTestCase::GetTestName
 );
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}

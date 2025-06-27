@@ -5,9 +5,18 @@ extern "C" {
 #include "../../../../projects/cyber_dojo/fizzbuzz_plus/fizzbuzz_plus_take_01/src/utils/utils.h"
 }
 
-using namespace ::testing;
+struct SingleNumberTestCase {
+    int input;
+    const char* expected;
 
-class FizzbuzzPlusTest : public TestWithParam<std::tuple<int, const char*>> {
+    static std::string GetTestName(
+        const testing::TestParamInfo<SingleNumberTestCase>& info
+    ) {
+        return std::to_string(info.param.input);
+    }
+};
+
+class FizzbuzzSingleTest : public testing::TestWithParam<SingleNumberTestCase> {
 protected:
     char buffer[100]{};
 
@@ -16,31 +25,45 @@ protected:
     }
 };
 
-TEST_P(FizzbuzzPlusTest, SingleNumber) {
-    auto [input, expected] = GetParam();
+TEST_P(FizzbuzzSingleTest, SingleNumber) {
+    const auto& [input, expected] = GetParam();
     fizzbuzz(input, buffer, sizeof(buffer));
     EXPECT_STREQ(buffer, expected)
             << "Fizzbuzz(" << input << ") = "
             << buffer << ", want " << expected;
 }
 
-INSTANTIATE_TEST_SUITE_P(FizzbuzzSingle, FizzbuzzPlusTest,
-    Values(
-        std::make_tuple(1, "1"),
-        std::make_tuple(2, "2"),
-        std::make_tuple(3, "Fizz"),
-        std::make_tuple(4, "4"),
-        std::make_tuple(5, "Buzz"),
-        std::make_tuple(6, "Fizz"),
-        std::make_tuple(10, "Buzz"),
-        std::make_tuple(12, "Fizz"),
-        std::make_tuple(13, "Fizz"),
-        std::make_tuple(15, "FizzBuzz"),
-        std::make_tuple(52, "Buzz")
-    )
+INSTANTIATE_TEST_SUITE_P(
+    FizzbuzzTests,
+    FizzbuzzSingleTest,
+    testing::Values(
+        SingleNumberTestCase{1, "1"},
+        SingleNumberTestCase{2, "2"},
+        SingleNumberTestCase{3, "Fizz"},
+        SingleNumberTestCase{4, "4"},
+        SingleNumberTestCase{5, "Buzz"},
+        SingleNumberTestCase{6, "Fizz"},
+        SingleNumberTestCase{10, "Buzz"},
+        SingleNumberTestCase{12, "Fizz"},
+        SingleNumberTestCase{13, "Fizz"},
+        SingleNumberTestCase{15, "FizzBuzz"},
+        SingleNumberTestCase{52, "Buzz"}
+    ),
+    SingleNumberTestCase::GetTestName
 );
 
-class FizzbuzzRangeTest : public TestWithParam<std::tuple<int, const char*>> {
+struct RangeTestCase {
+    int input;
+    const char* expected;
+
+    static std::string GetTestName(
+        const testing::TestParamInfo<RangeTestCase>& info
+    ) {
+        return std::to_string(info.param.input);
+    }
+};
+
+class FizzbuzzRangeTest : public testing::TestWithParam<RangeTestCase> {
 protected:
     char buffer[4096]{};
 
@@ -50,8 +73,8 @@ protected:
 };
 
 TEST_P(FizzbuzzRangeTest, Range) {
-    auto [input, expected] = GetParam();
-    
+    const auto& [input, expected] = GetParam();
+
     char** result = static_cast<char**>(malloc(input * sizeof(char*)));
     ASSERT_NE(result, nullptr);
 
@@ -66,13 +89,16 @@ TEST_P(FizzbuzzRangeTest, Range) {
     free(result);
 }
 
-INSTANTIATE_TEST_SUITE_P(FizzbuzzRange, FizzbuzzRangeTest,
-    Values(
-        std::make_tuple(1, "1"),
-        std::make_tuple(2, "1\n2"),
-        std::make_tuple(15,
-            "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\nFizz\n14\nFizzBuzz")
-    )
+INSTANTIATE_TEST_SUITE_P(
+    FizzbuzzTests,
+    FizzbuzzRangeTest,
+    testing::Values(
+        RangeTestCase{1, "1"},
+        RangeTestCase{2, "1\n2"},
+        RangeTestCase{15,
+            "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\nFizz\n14\nFizzBuzz"}
+    ),
+    RangeTestCase::GetTestName
 );
 
 TEST(FizzbuzzRangeTest, RangeUntilOneHundred) {
@@ -100,4 +126,9 @@ TEST(FizzbuzzRangeTest, RangeUntilOneHundred) {
 
     free_fizzbuzz_range(result, n);
     free(result);
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

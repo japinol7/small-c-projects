@@ -5,9 +5,7 @@ extern "C" {
 #include "../../../../projects/cyber_dojo/print_diamond/print_diamond_take_01/src/print_diamond.h"
 }
 
-using namespace ::testing;
-
-class PrintDiamondTest : public Test {
+class PrintDiamondTest : public testing::Test {
 protected:
     void SetUp() override {
         // No setup needed
@@ -15,7 +13,7 @@ protected:
 };
 
 // Test cases for empty or invalid input
-class PrintDiamondEmptyInvalidTest : public TestWithParam<std::tuple<
+class PrintDiamondEmptyInvalidTest : public testing::TestWithParam<std::tuple<
     const char*, const char*>>
 {
 protected:
@@ -44,8 +42,10 @@ TEST_P(PrintDiamondEmptyInvalidTest, EmptyOrInvalidInput) {
     freeDiamond(diamond);
 }
 
-INSTANTIATE_TEST_SUITE_P(PrintDiamondEmptyInvalid, PrintDiamondEmptyInvalidTest,
-    Values(
+INSTANTIATE_TEST_SUITE_P(
+    PrintDiamondEmptyInvalid,
+    PrintDiamondEmptyInvalidTest,
+    testing::Values(
         std::make_tuple("", ""),
         std::make_tuple(" ", ""),
         std::make_tuple("ñ", ""),
@@ -204,4 +204,9 @@ TEST_F(PrintDiamondTest, LetterEWithOutput) {
     // Clean up
     free(result);
     freeDiamond(diamond);
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

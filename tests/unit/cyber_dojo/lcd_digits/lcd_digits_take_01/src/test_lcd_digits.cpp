@@ -6,8 +6,6 @@ extern "C" {
 #include "../../../../projects/cyber_dojo/lcd_digits/lcd_digits_take_01/src/lcd_digit_cell.h"
 }
 
-using namespace ::testing;
-
 // Chars used to display test LCD digits and the separator strings
 constexpr char TEST_CELL_H = '_';
 constexpr char TEST_CELL_V = '|';
@@ -94,7 +92,7 @@ const char* DIGITS_REPR_910 = ""
     "\n..| ..| |_|"
     "\n";
 
-class LcdDigitsTest : public Test {
+class LcdDigitsTest : public testing::Test {
 protected:
     LcdDigits lcd{};
     char result[4096]{};
@@ -207,4 +205,9 @@ TEST_F(LcdDigitsTest, NegativeNumberError) {
     EXPECT_EQ(-1, lcd_digits_generate(
             -1, result, sizeof(result), &error, nullptr));
     EXPECT_STREQ("Number must be non-negative", error.message);
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

@@ -4,9 +4,7 @@ extern "C" {
 #include "../../../../projects/cyber_dojo/game_of_life/game_of_life_take_01/src/game_of_life.h"
 }
 
-using namespace ::testing;
-
-class GameOfLifeTest : public Test {
+class GameOfLifeTest : public testing::Test {
 protected:
     char buffer[100]{};
 
@@ -235,4 +233,9 @@ TEST_F(GameOfLifeTest, StepOverpopulationCustomCellRepr) {
         << "Expected cell (1,1) to die from overpopulation";
 
     game_of_life_free(game);
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

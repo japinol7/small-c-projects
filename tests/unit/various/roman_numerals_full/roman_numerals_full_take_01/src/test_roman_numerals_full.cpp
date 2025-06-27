@@ -5,10 +5,47 @@ extern "C" {
 #include "../../../../projects/various/roman_numerals_full/roman_numerals_full_take_01/src/roman_numerals_full.h"
 }
 
-using namespace ::testing;
+struct ToRomanTestCase {
+    int num;
+    const char* expected;
+    bool has_error;
+
+    static std::string GetTestName(
+        const testing::TestParamInfo<ToRomanTestCase>& info
+    ) {
+        if (info.param.expected == "") {
+            // Replace invalid characters with underscores
+            std::string name = std::to_string(info.param.num);
+            std::replace(name.begin(), name.end(), '-', '_');
+            return "Input_Error_" + name;
+        }
+        // Replace invalid characters with underscores
+        std::string name = std::to_string(info.param.num);
+        std::replace(name.begin(), name.end(), '-', '_');
+        return "Number_" + name + "_Roman_" + info.param.expected;
+    }
+};
+
+struct FromRomanTestCase {
+    const char* roman;
+    int expected;
+    bool has_error;
+
+    static std::string GetTestName(
+        const testing::TestParamInfo<FromRomanTestCase>& info
+    ) {
+        if (info.param.expected == 0) {
+            return std::string("Input_Error_") + info.param.roman;
+        }
+        return std::string("Roman_") + info.param.roman
+               + std::string("_Number_")
+               + std::to_string(info.param.expected);;
+    }
+};
 
 // Parameterized test class for ToRoman conversion
-class ToRomanTest : public TestWithParam<std::tuple<int, const char*, bool>> {
+class ToRomanTest : public testing::TestWithParam<
+    ToRomanTestCase> {
 protected:
     char roman_buffer[20]{};
 
@@ -18,7 +55,7 @@ protected:
 };
 
 TEST_P(ToRomanTest, ConvertToRoman) {
-    auto [num, expected, has_error] = GetParam();
+    const auto& [num, expected, has_error] = GetParam();
     const int result = to_roman(num, roman_buffer, sizeof(roman_buffer));
 
     if (has_error) {
@@ -31,42 +68,46 @@ TEST_P(ToRomanTest, ConvertToRoman) {
     }
 }
 
-INSTANTIATE_TEST_SUITE_P(ToRomanCases, ToRomanTest,
-    Values(
-        std::make_tuple(1, "I", false),
-        std::make_tuple(2, "II", false),
-        std::make_tuple(3, "III", false),
-        std::make_tuple(4, "IV", false),
-        std::make_tuple(5, "V", false),
-        std::make_tuple(9, "IX", false),
-        std::make_tuple(10, "X", false),
-        std::make_tuple(40, "XL", false),
-        std::make_tuple(50, "L", false),
-        std::make_tuple(73, "LXXIII", false),
-        std::make_tuple(90, "XC", false),
-        std::make_tuple(93, "XCIII", false),
-        std::make_tuple(100, "C", false),
-        std::make_tuple(400, "CD", false),
-        std::make_tuple(500, "D", false),
-        std::make_tuple(900, "CM", false),
-        std::make_tuple(1000, "M", false),
-        std::make_tuple(1984, "MCMLXXXIV", false),
-        std::make_tuple(2023, "MMXXIII", false),
-        std::make_tuple(3999, "MMMCMXCIX", false),
-        std::make_tuple(0, "", true), // Error case
-        std::make_tuple(4000, "", true), // Error case
-        std::make_tuple(-1, "", true) // Error case
-    )
+INSTANTIATE_TEST_SUITE_P(
+    RomanNumerals,
+    ToRomanTest,
+    testing::Values(
+        ToRomanTestCase{1, "I", false},
+        ToRomanTestCase{2, "II", false},
+        ToRomanTestCase{3, "III", false},
+        ToRomanTestCase{4, "IV", false},
+        ToRomanTestCase{5, "V", false},
+        ToRomanTestCase{9, "IX", false},
+        ToRomanTestCase{10, "X", false},
+        ToRomanTestCase{40, "XL", false},
+        ToRomanTestCase{50, "L", false},
+        ToRomanTestCase{73, "LXXIII", false},
+        ToRomanTestCase{90, "XC", false},
+        ToRomanTestCase{93, "XCIII", false},
+        ToRomanTestCase{100, "C", false},
+        ToRomanTestCase{400, "CD", false},
+        ToRomanTestCase{500, "D", false},
+        ToRomanTestCase{900, "CM", false},
+        ToRomanTestCase{1000, "M", false},
+        ToRomanTestCase{1984, "MCMLXXXIV", false},
+        ToRomanTestCase{2023, "MMXXIII", false},
+        ToRomanTestCase{3999, "MMMCMXCIX", false},
+        ToRomanTestCase{0, "", true}, // Error case
+        ToRomanTestCase{4000, "", true}, // Error case
+        ToRomanTestCase{-1, "", true} // Error case
+    ),
+    ToRomanTestCase::GetTestName
 );
 
 // Parameterized test class for FromRoman conversion
-class FromRomanTest : public TestWithParam<std::tuple<const char*, int, bool>> {
+class FromRomanTest : public testing::TestWithParam<
+    FromRomanTestCase> {
 protected:
     int num{};
 };
 
 TEST_P(FromRomanTest, ConvertFromRoman) {
-    auto [roman, expected, has_error] = GetParam();
+    const auto& [roman, expected, has_error] = GetParam();
     const int result = from_roman(roman, &num);
 
     if (has_error) {
@@ -80,37 +121,47 @@ TEST_P(FromRomanTest, ConvertFromRoman) {
     }
 }
 
-INSTANTIATE_TEST_SUITE_P(FromRomanCases, FromRomanTest,
-    Values(
-        std::make_tuple("I", 1, false),
-        std::make_tuple("II", 2, false),
-        std::make_tuple("III", 3, false),
-        std::make_tuple("IV", 4, false),
-        std::make_tuple("V", 5, false),
-        std::make_tuple("IX", 9, false),
-        std::make_tuple("X", 10, false),
-        std::make_tuple("XL", 40, false),
-        std::make_tuple("L", 50, false),
-        std::make_tuple("LXXIII", 73, false),
-        std::make_tuple("XC", 90, false),
-        std::make_tuple("XCIII", 93, false),
-        std::make_tuple("C", 100, false),
-        std::make_tuple("CD", 400, false),
-        std::make_tuple("D", 500, false),
-        std::make_tuple("CM", 900, false),
-        std::make_tuple("M", 1000, false),
-        std::make_tuple("MCMLXXXIV", 1984, false),
-        std::make_tuple("MMXXIII", 2023, false),
-        std::make_tuple("MMMCMXCIX", 3999, false),
-        std::make_tuple("", 0, true), // Error case
-        std::make_tuple("MMMM", 0, true), // Error case (4000)
-        std::make_tuple("ABC", 0, true), // Error case (invalid chars)
-        std::make_tuple("MMMCMXCIY", 0, true) // Error case (invalid char Y)
-    )
+INSTANTIATE_TEST_SUITE_P(
+    RomanNumerals,
+    FromRomanTest,
+    testing::Values(
+        // Valid cases - single numerals
+        FromRomanTestCase{"I", 1, false},
+        FromRomanTestCase{"V", 5, false},
+        FromRomanTestCase{"X", 10, false},
+        FromRomanTestCase{"L", 50, false},
+        FromRomanTestCase{"C", 100, false},
+        FromRomanTestCase{"D", 500, false},
+        FromRomanTestCase{"M", 1000, false},
+
+        // Valid cases - common combinations
+        FromRomanTestCase{"II", 2, false},
+        FromRomanTestCase{"III", 3, false},
+        FromRomanTestCase{"IV", 4, false},
+        FromRomanTestCase{"IX", 9, false},
+        FromRomanTestCase{"XL", 40, false},
+        FromRomanTestCase{"LXXIII", 73, false},
+        FromRomanTestCase{"XC", 90, false},
+        FromRomanTestCase{"XCIII", 93, false},
+        FromRomanTestCase{"CD", 400, false},
+        FromRomanTestCase{"CM", 900, false},
+
+        // Valid cases - large numbers
+        FromRomanTestCase{"MCMLXXXIV", 1984, false},
+        FromRomanTestCase{"MMXXIII", 2023, false},
+        FromRomanTestCase{"MMMCMXCIX", 3999, false},
+
+        // Error cases
+        FromRomanTestCase{"", 0, true},
+        FromRomanTestCase{"MMMM", 0, true}, // Error case (4000)
+        FromRomanTestCase{"ABC", 0, true}, // Invalid chars
+        FromRomanTestCase{"MMMCMXCIY", 0, true} // Invalid char Y
+    ),
+    FromRomanTestCase::GetTestName
 );
 
 // Round-trip test class
-class RoundTripTest : public Test {
+class RoundTripTest : public testing::Test {
 protected:
     char roman_buffer[20]{};
 
@@ -135,4 +186,9 @@ TEST_F(RoundTripTest, RoundTrip) {
 
         memset(roman_buffer, 0, sizeof(roman_buffer));
     }
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

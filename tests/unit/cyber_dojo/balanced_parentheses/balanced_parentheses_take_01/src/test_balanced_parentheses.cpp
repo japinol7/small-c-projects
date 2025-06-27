@@ -1,13 +1,10 @@
 #include <gtest/gtest.h>
 
-// Include the C header
 extern "C" {
 #include "../../../../projects/cyber_dojo/balanced_parentheses/balanced_parentheses_take_01/src/balanced_parentheses.h"
 }
 
-using namespace ::testing;
-
-class BalancedParenthesesTest : public Test {
+class BalancedParenthesesTest : public testing::Test {
 protected:
     void SetUp() override {
     }
@@ -55,4 +52,9 @@ TEST_F(BalancedParenthesesTest, IncorrectlyNested) {
 
 TEST_F(BalancedParenthesesTest, Mismatched) {
     EXPECT_FALSE(are_parentheses_balanced("({)}"));
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

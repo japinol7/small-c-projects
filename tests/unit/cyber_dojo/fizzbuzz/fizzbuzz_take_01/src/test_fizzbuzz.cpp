@@ -2,12 +2,21 @@
 
 extern "C" {
 #include "../../../../projects/cyber_dojo/fizzbuzz/fizzbuzz_take_01/src/fizzbuzz.h"
-#include "../../../../projects/cyber_dojo/fizzbuzz/fizzbuzz_take_01/src/utils/utils.h"
+#include "../../../../projects/cyber_dojo/fizzbuzz_plus/fizzbuzz_plus_take_01/src/utils/utils.h"
 }
 
-using namespace ::testing;
+struct SingleNumberTestCase {
+    int input;
+    const char* expected;
 
-class FizzbuzzSingleTest : public TestWithParam<std::tuple<int, const char*>> {
+    static std::string GetTestName(
+        const testing::TestParamInfo<SingleNumberTestCase>& info
+    ) {
+        return std::string("Number_") + std::to_string(info.param.input);
+    }
+};
+
+class FizzbuzzSingleTest : public testing::TestWithParam<SingleNumberTestCase> {
 protected:
     char buffer[100]{};
 
@@ -17,31 +26,45 @@ protected:
 };
 
 TEST_P(FizzbuzzSingleTest, SingleNumber) {
-    auto [input, expected] = GetParam();
+    const auto& [input, expected] = GetParam();
     fizzbuzz(input, buffer, sizeof(buffer));
     EXPECT_STREQ(buffer, expected)
             << "Fizzbuzz(" << input << ") = "
             << buffer << ", want " << expected;
 }
 
-INSTANTIATE_TEST_SUITE_P(FizzbuzzSingle, FizzbuzzSingleTest,
-    Values(
-        std::make_tuple(1, "1"),
-        std::make_tuple(2, "2"),
-        std::make_tuple(3, "Fizz"),
-        std::make_tuple(4, "4"),
-        std::make_tuple(5, "Buzz"),
-        std::make_tuple(6, "Fizz"),
-        std::make_tuple(10, "Buzz"),
-        std::make_tuple(13, "13"),
-        std::make_tuple(15, "FizzBuzz"),
-        std::make_tuple(52, "52")
-    )
+INSTANTIATE_TEST_SUITE_P(
+    FizzbuzzTests,
+    FizzbuzzSingleTest,
+    testing::Values(
+        SingleNumberTestCase{1, "1"},
+        SingleNumberTestCase{2, "2"},
+        SingleNumberTestCase{3, "Fizz"},
+        SingleNumberTestCase{4, "4"},
+        SingleNumberTestCase{5, "Buzz"},
+        SingleNumberTestCase{6, "Fizz"},
+        SingleNumberTestCase{10, "Buzz"},
+        SingleNumberTestCase{13, "13"},
+        SingleNumberTestCase{15, "FizzBuzz"},
+        SingleNumberTestCase{52, "52"}
+    ),
+    SingleNumberTestCase::GetTestName
 );
 
-class FizzbuzzRangeTest : public TestWithParam<std::tuple<int, const char*>> {
+struct RangeTestCase {
+    int input;
+    const char* expected;
+
+    static std::string GetTestName(
+        const testing::TestParamInfo<RangeTestCase>& info
+    ) {
+        return std::to_string(info.param.input);
+    }
+};
+
+class FizzbuzzRangeTest : public testing::TestWithParam<RangeTestCase> {
 protected:
-    char buffer[100]{};
+    char buffer[4096]{};
 
     void SetUp() override {
         memset(buffer, 0, sizeof(buffer));
@@ -49,8 +72,8 @@ protected:
 };
 
 TEST_P(FizzbuzzRangeTest, Range) {
-    auto [input, expected] = GetParam();
-    
+    const auto& [input, expected] = GetParam();
+
     char** result = static_cast<char**>(malloc(input * sizeof(char*)));
     ASSERT_NE(result, nullptr);
 
@@ -65,17 +88,20 @@ TEST_P(FizzbuzzRangeTest, Range) {
     free(result);
 }
 
-INSTANTIATE_TEST_SUITE_P(FizzbuzzRange, FizzbuzzRangeTest,
-    Values(
-        std::make_tuple(1, "1"),
-        std::make_tuple(2, "1\n2"),
-        std::make_tuple(15,
-            "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz")
-    )
+INSTANTIATE_TEST_SUITE_P(
+    FizzbuzzRange,
+    FizzbuzzRangeTest,
+    testing::Values(
+        RangeTestCase{1, "1"},
+        RangeTestCase{2, "1\n2"},
+        RangeTestCase{15,
+            "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz"}
+    ),
+    RangeTestCase::GetTestName
 );
 
-TEST(FizzbuzzRangeHundredTest, RangeUntilOneHundred) {
-    const int n = 100;
+TEST(FizzbuzzRangeTest, RangeUntilOneHundred) {
+    constexpr int n = 100;
     char** result = static_cast<char**>(malloc(n * sizeof(char*)));
     ASSERT_NE(result, nullptr);
 
@@ -98,4 +124,9 @@ TEST(FizzbuzzRangeHundredTest, RangeUntilOneHundred) {
 
     free_fizzbuzz_range(result, n);
     free(result);
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
