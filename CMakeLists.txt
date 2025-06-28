@@ -15,6 +15,10 @@ include_directories(projects/cyber_dojo/balanced_parentheses/balanced_parenthese
 add_subdirectory(projects/cyber_dojo/balanced_parentheses/balanced_parentheses_take_01)
 target_link_libraries(balanced_parentheses_run projects/cyber_dojo/balanced_parentheses/balanced_parentheses_take_01)
 
+include_directories(projects/cyber_dojo/count_coins/count_coins_take_01)
+add_subdirectory(projects/cyber_dojo/count_coins/count_coins_take_01)
+target_link_libraries(count_coins_run projects/cyber_dojo/count_coins/count_coins_take_01)
+
 include_directories(projects/cyber_dojo/filename_range/filename_range_take_01)
 add_subdirectory(projects/cyber_dojo/filename_range/filename_range_take_01)
 target_link_libraries(filename_range_run projects/cyber_dojo/filename_range/filename_range_take_01)
@@ -30,6 +34,10 @@ target_link_libraries(isbn_run projects/cyber_dojo/isbn/isbn_take_01)
 include_directories(projects/cyber_dojo/leap_year/leap_year_take_01)
 add_subdirectory(projects/cyber_dojo/leap_year/leap_year_take_01)
 target_link_libraries(leap_year_run projects/cyber_dojo/leap_year/leap_year_take_01)
+
+include_directories(projects/cyber_dojo/mine_field/mine_field_take_01)
+add_subdirectory(projects/cyber_dojo/mine_field/mine_field_take_01)
+target_link_libraries(mine_field_run projects/cyber_dojo/mine_field/mine_field_take_01)
 
 include_directories(projects/cyber_dojo/print_diamond/print_diamond_take_01)
 add_subdirectory(projects/cyber_dojo/print_diamond/print_diamond_take_01)
